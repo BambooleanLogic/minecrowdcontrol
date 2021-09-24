@@ -1,6 +1,7 @@
 package com.racerxdl.minecrowdcontrol;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Timings {
@@ -31,7 +32,7 @@ public class Timings {
     }};
 
     public static int GetStopTiming(String cmd) {
-        cmd = cmd.toUpperCase();
+        cmd = cmd.toUpperCase(Locale.ROOT);
 
         if (StopTimingMap.get(cmd) != null) {
             return StopTimingMap.get(cmd);

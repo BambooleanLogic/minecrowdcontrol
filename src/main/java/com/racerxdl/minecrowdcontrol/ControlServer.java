@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -147,8 +148,8 @@ public class ControlServer {
     public CommandResult RunCommand(String command, String viewer, RequestType type) {
         CommandResult res = new CommandResult(GetStates()).SetEffectResult(EffectResult.Unavailable);
 
-        if (Commands.CommandList.get(command.toUpperCase()) != null) {
-            res = Commands.CommandList.get(command.toUpperCase()).Run(GetStates(), player, client, server, viewer, type);
+        if (Commands.CommandList.get(command.toUpperCase(Locale.ROOT)) != null) {
+            res = Commands.CommandList.get(command.toUpperCase(Locale.ROOT)).Run(GetStates(), player, client, server, viewer, type);
         } else {
             Log.error("Command {} not found", command);
         }
@@ -175,6 +176,7 @@ public class ControlServer {
             CommandResult cmdRes = RunCommand(req.code, req.viewer, req.type);
             res.status = cmdRes.GetEffectResult();
             res.message = "Effect " + req.code + ": " + res.status;
+            res.timeRemaining = cmdRes.GetTimeRemaining();
 
             int sendStopAfter = Timings.GetStopTiming(req.code);
 
@@ -182,7 +184,7 @@ public class ControlServer {
                 ScheduleCommand(req.code, sendStopAfter);
             }
 
-            if (req.type == RequestType.Start && res.status == EffectResult.Success && req.code.toUpperCase().equals("DRUNK_MODE")) {
+            if (req.type == RequestType.Start && res.status == EffectResult.Success && req.code.toUpperCase(Locale.ROOT).equals("DRUNK_MODE")) {
                 Log.info("Starting drunk mode loop");
                 SetStates(GetStates().setOriginalFOV(client.gameSettings.fov));
                 DrunkModeLoop();

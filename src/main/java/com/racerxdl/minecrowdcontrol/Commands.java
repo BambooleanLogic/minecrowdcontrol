@@ -124,19 +124,19 @@ public class Commands {
 
     static {
         spawnEntities.forEach((et) -> {
-            String entityName = et.getName().getString().toUpperCase().replace(" ", "");
+            String entityName = et.getName().getString().toUpperCase(Locale.ROOT).replace(" ", "");
             Log.info("Adding command SPAWN_{}", entityName);
             CommandList.put("SPAWN_" + entityName, (states, u, u1, server, viewer, type) -> SpawnEntity(states, server, viewer, type, et));
         });
 
         spawnItems.forEach((item) -> {
-            String itemName = item.getName().getString().toUpperCase().replace(" ", "");
+            String itemName = item.getName().getString().toUpperCase(Locale.ROOT).replace(" ", "");
             Log.info("Adding command CREATE_{}", itemName);
             CommandList.put("CREATE_" + itemName, (states, player, u1, server, viewer, type) -> SpawnItem(states, player, server, viewer, type, item));
         });
 
         difficults.forEach((diff) -> {
-            String diffName = diff.getDisplayName().getString().toUpperCase().replace(" ", "");
+            String diffName = diff.getDisplayName().getString().toUpperCase(Locale.ROOT).replace(" ", "");
             Log.info("Adding command SET_DIFFICULT_{}", diffName);
             CommandList.put("SET_DIFFICULT_" + diffName, (states, player, u1, server, viewer, type) -> SetDifficult(states, player, server, viewer, type, diff));
         });
@@ -357,7 +357,7 @@ public class Commands {
 
             return res
                     .SetNewStates(states.setDrunkMode(true))
-                    .SetEffectResult(EffectResult.Success);
+                    .SetEffectResult(EffectResult.Success, Timings.GetStopTiming("DRUNK_MODE"));
         } else if (type == RequestType.Stop) {
             if (!states.getDrunkMode()) {
                 return res.SetEffectResult(EffectResult.Retry);
@@ -416,7 +416,7 @@ public class Commands {
             );
         }
 
-        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Retry);
+        return result ? res.SetEffectResult(EffectResult.Success, Timings.GetStopTiming("GOTTA_GO_FAST")) : res.SetEffectResult(EffectResult.Retry);
     }
 
     public static CommandResult SetRaining(PlayerStates states, PlayerEntity unused, Minecraft client, MinecraftServer server, String viewer, RequestType type) {
@@ -457,7 +457,7 @@ public class Commands {
             return true;
         });
 
-        return result ? res.SetEffectResult(EffectResult.Success) : res.SetEffectResult(EffectResult.Retry);
+        return result ? res.SetEffectResult(EffectResult.Success, Timings.GetStopTiming("MAKE_IT_RAIN")) : res.SetEffectResult(EffectResult.Retry);
     }
 
     public static CommandResult SetInvertMouse(PlayerStates states, PlayerEntity player, Minecraft client, MinecraftServer unused2, String viewer, RequestType type) {
@@ -471,7 +471,7 @@ public class Commands {
             Log.info(Messages.ServerInvertMouse, viewer, player.getName().getString());
             SendPlayerMessage(player, Messages.ClientInvertMouse, viewer);
             AbstractOption.INVERT_MOUSE.set(client.gameSettings, "true");
-            return res.SetEffectResult(EffectResult.Success);
+            return res.SetEffectResult(EffectResult.Success, Timings.GetStopTiming("INVERT_MOUSE"));
         } else if (type == RequestType.Stop) {
             if (!client.gameSettings.invertMouse) {
                 return res.SetEffectResult(EffectResult.Retry);
@@ -497,7 +497,7 @@ public class Commands {
             Log.info(Messages.ServerJumpDisabled, viewer, player.getName().getString());
             SendPlayerMessage(player, Messages.ClientJumpDisabled, viewer);
             return res
-                    .SetEffectResult(EffectResult.Success)
+                    .SetEffectResult(EffectResult.Success, Timings.GetStopTiming("DISABLE_JUMP"))
                     .SetNewStates(res.GetPlayerStates().setJumpDisabled(true));
         } else if (type == RequestType.Stop) {
             if (!res.GetPlayerStates().getJumpDisabled()) {

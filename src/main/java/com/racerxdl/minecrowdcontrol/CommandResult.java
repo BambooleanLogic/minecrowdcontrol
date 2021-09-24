@@ -5,10 +5,12 @@ import com.racerxdl.minecrowdcontrol.CrowdControl.EffectResult;
 public class CommandResult {
     private EffectResult effectResult;
     private PlayerStates newStates;
+    private long timeRemaining;
 
     public CommandResult() {
         effectResult = EffectResult.Failure;
         newStates = new PlayerStates();
+        timeRemaining = 0;
     }
 
     public CommandResult(PlayerStates states) {
@@ -19,6 +21,13 @@ public class CommandResult {
     public CommandResult SetEffectResult(EffectResult result) {
         CommandResult r = this.Clone();
         r.effectResult = result;
+        return r;
+    }
+
+    public CommandResult SetEffectResult(EffectResult result, long timeRemainingInSeconds) {
+        CommandResult r = this.Clone();
+        r.effectResult = result;
+        r.timeRemaining = timeRemainingInSeconds * 1000L;
         return r;
     }
 
@@ -34,6 +43,10 @@ public class CommandResult {
 
     public PlayerStates GetPlayerStates() {
         return newStates.Clone();
+    }
+
+    public long GetTimeRemaining() {
+        return timeRemaining;
     }
 
     public CommandResult Clone() {

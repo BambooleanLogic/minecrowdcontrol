@@ -8,11 +8,13 @@ public class Response {
     public int id;
     public EffectResult status;
     public String message;
+    public long timeRemaining;
 
     public Response() {
         this.id = 0;
         this.status = EffectResult.Unavailable;
         this.message = "Not available";
+        this.timeRemaining = 0;
     }
 
     public static Response FromJSON(String jsonData) {
